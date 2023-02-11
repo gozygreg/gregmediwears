@@ -17,12 +17,15 @@
     {% block corecss %}
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <!-- <link rel="stylesheet" href="https://bootswatch.com/5/flatly/bootstrap.min.css"> -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     {% endblock %}
 
-    {% block extra_css %}
-    {% endblock %}
 
     {% block corejs %}
+    <script src="https://kit.fontawesome.com/7f6773795a.js" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
         integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous">
     </script>
@@ -55,18 +58,27 @@
                     aria-haspopup="true" aria-expanded="false">
                     Categories
                 </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="{% url 'store' %}">All</a>
-                    <a class="dropdown-item" href="#">Shirts</a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <li>
+                        <a class="dropdown-item" href="{% url 'store' %}">All</a>
+                    </li>
+                    {% for category in all_categories %}
+                    <li>
+                        <a class="dropdown-item" href="">{{ category.name }}</a>
+                    </li>
+                    {% endfor %}
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="#">Something else here</a>
-                </div>
+                </ul>
             </li>
 
         </ul>
-        <form class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        <form method="GET" action="" class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search our site" aria-label="Search"
+                name="q">
+            <button class="form-control btn btn-outline-success my-2 my-sm-0" type="submit">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
         </form>
     </div>
     <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
@@ -80,7 +92,8 @@
             &nbsp; &nbsp; &nbsp;
             <li class="nav-item">
                 <a type="button" role="button" href="/" class="btn btn-outline-secondary">
-                    <i class="fa fa-shopping-cart" aria-hidden="true"> Cart </i>
+                    <i class="fa fa-shopping-cart" aria-hidden="true">
+                    </i>
                 </a>
             </li>
             &nbsp; &nbsp; &nbsp;
