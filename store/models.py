@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 
 class Category(models.Model):
@@ -10,6 +11,13 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        """
+        creates custom url so that users can be redirected to
+        specific category page
+        """
+        return reverse('list-category', args=[self.slug])
 
 
 class Product(models.Model):
@@ -29,3 +37,10 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        """
+        creates custom url so that users can be redirected to
+        specific product page
+        """
+        return reverse('product-info', args=[self.slug])

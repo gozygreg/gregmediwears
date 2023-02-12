@@ -64,14 +64,13 @@
                     </li>
                     {% for category in all_categories %}
                     <li>
-                        <a class="dropdown-item" href="">{{ category.name }}</a>
+                        <a class="dropdown-item" href="{{ category.get_absolute_url }}">{{ category.name }}</a>
                     </li>
                     {% endfor %}
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="#">Something else here</a>
                 </ul>
             </li>
-
         </ul>
         <form method="GET" action="" class="form-inline my-2 my-lg-0">
             <input class="form-control mr-sm-2" type="search" placeholder="Search our site" aria-label="Search"
