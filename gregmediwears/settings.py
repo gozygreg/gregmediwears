@@ -72,6 +72,8 @@ TEMPLATES = [
 
                 # allows our data to be available in every templates or page
                 'store.views.categories',
+                # To have access to our bag and session from anywhere on our page
+                'bag.context_processors.bag',
             ],
         },
     },
