@@ -22,10 +22,10 @@ def bag_add(request):
 
         bag.add(product=product, product_qty=product_quantity)
 
-        response = JsonResponse(
-            {
-                'The product is called: ': product.name,
-                ' and the product quantity is: ': product_quantity})
+        # Pass total qauntity from session data
+        bag_quantity = bag.__len__()
+
+        response = JsonResponse({'qty': bag_quantity})
         return response
 
 

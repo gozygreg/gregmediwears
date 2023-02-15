@@ -24,3 +24,8 @@ class Bag():
                 }
 
         self.session.modified = True
+
+
+    def __len__(self):
+        # Gets the length of the total products in our session
+        return sum(item['qty'] for item in self.bag.values())
