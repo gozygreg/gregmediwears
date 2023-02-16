@@ -12,7 +12,9 @@ def bag_summary(request):
 
 
 def bag_add(request):
-
+    """
+    View to add product into shopping bag
+    """
     bag = Bag(request)
 
     if request.POST.get('action') == 'post':
@@ -23,7 +25,10 @@ def bag_add(request):
 
         bag.add(product=product, product_qty=product_quantity)
 
-        # Pass total qauntity from session data
+        """
+        Gets the total qauntity of products (from session data)
+        after adding a product into the shopping bag
+        """
         bag_quantity = bag.__len__()
 
         response = JsonResponse({'qty': bag_quantity})
@@ -31,7 +36,24 @@ def bag_add(request):
 
 
 def bag_delete(request):
-    pass
+    """
+    View to delete product from shopping bag
+    """
+    bag = Bag(request)
+
+    if request.POST.get('action') == 'post':
+        product_id = int(request.POST.get('product_id'))
+        bag.delete(product=product_id)
+
+        """
+        Gets the latest quantity and total price after
+        removing a product from the shopping bag
+        """
+        bag_quantity = bag.__len__()
+        bag_total = bag.get_total()
+
+        response = JsonResponse({'qty': bag_quantity, 'total': bag_total})
+        return response
 
 
 def bag_update(request):

@@ -21,6 +21,10 @@ class Bag():
         self.bag = bag
 
     def add(self, product, product_qty):
+        """ 
+        Function that allow customers to add product
+        to their shopping bag
+        """
         product_id = str(product.id)
 
         if product_id in self.bag:
@@ -30,6 +34,18 @@ class Bag():
             self.bag[product_id] = {
                 'price': str(product.price), 'qty': product_qty
                 }
+
+        self.session.modified = True
+
+    def delete(self, product):
+        """
+        Function that allow customers to remove products
+        from their shopping bag
+        """
+        product_id = str(product)
+
+        if product_id in self.bag:
+            del self.bag[product_id]
 
         self.session.modified = True
 

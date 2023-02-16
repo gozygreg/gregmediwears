@@ -57,7 +57,7 @@
                   Update
                 </button>
                 &nbsp;
-                <button type="button" id="delete-button" class="btn btn-danger btn-sm delete-button">
+                <button type="button" class="btn btn-danger btn-sm delete-button" data-index="{{ product.id }}">
                   Delete
                 </button>
               </div>
@@ -69,7 +69,7 @@
     {% endwith %}
     {% endfor %}
     <div class="col-12 text-end">
-      <div class="h6 fw-bold"> Sub total: £ <div id="subtotal" class="d-inline-flex">
+      <div class="h6 fw-bold"> Sub total: £ <div id="total" class="d-inline-flex">
           <!-- bag.get_total -->
           {{ bag.get_total }}
         </div>
@@ -78,5 +78,30 @@
   </div>
   <br><br>
 </main>
+
+<script>
+  // Delete button
+  $(document).on('click', '.delete-button', function (e) {
+    e.preventDefault();
+    $.ajax({
+      type: 'POST',
+      url: '{% url "bag-delete" %}',
+      data: {
+        product_id: $(this).data('index'),
+        csrfmiddlewaretoken: "{{ csrf_token }}",
+        action: 'post'
+      },
+      success: function (json) {
+        location.reload();
+        document.getElementById("bag-qty").textContent = json.qty
+        document.getElementById("total").textContent = json.total
+      },
+      error: function (xhr, errmsg, err) {
+
+      }
+
+    });
+  })
+</script>
 
 {% endblock %}
