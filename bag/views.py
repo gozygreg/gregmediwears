@@ -57,4 +57,23 @@ def bag_delete(request):
 
 
 def bag_update(request):
-    pass
+    """
+    View to update items in shopping bag
+    """
+    bag = Bag(request)
+
+    if request.POST.get('action') == 'post':
+        product_id = int(request.POST.get('product_id'))
+        product_quantity = int(request.POST.get('product_quantity'))
+
+        bag.update(product=product_id, qty=product_quantity)
+
+        """
+        Gets the latest quantity and total price after
+        updating a product in the shopping bag
+        """
+        bag_quantity = bag.__len__()
+        bag_total = bag.get_total()
+
+        response = JsonResponse({'qty': bag_quantity, 'total': bag_total})
+        return response
