@@ -63,3 +63,14 @@ class Bag():
             item['price'] = Decimal(item['price'])
             item['total'] = item['price'] * item['qty']
             yield item
+
+    def get_total(self):
+        """
+        Function to take the price of all of the items and multiply
+        it by the quantity of those items, and then loop over that
+        and return the total cost or the total price.
+        """
+        return sum(
+            Decimal(
+                item['price']) * item['qty'] for item in self.bag.values()
+                )
