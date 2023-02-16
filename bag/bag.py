@@ -1,3 +1,11 @@
+from decimal import Decimal
+from store.models import Product
+
+
+"""
+Available on every page on our template and application
+"""
+
 
 class Bag():
     def __init__(self, request):
@@ -25,7 +33,33 @@ class Bag():
 
         self.session.modified = True
 
-
     def __len__(self):
-        # Gets the length of the total products in our session
+        """
+        Gets the length and sum of the total products in our session
+        or gets the total items in our shopping bag
+        """
         return sum(item['qty'] for item in self.bag.values())
+
+    def __iter__(self):
+        """
+        Function to iterate through all products in our
+        shopping bag
+        steps:
+        1. get all product ids
+        2. select all product in database where its id
+        matches those in the shopping bag
+        3. copy an instance of our session data
+        4. loop through matching products in our database
+        5. define price and then calculate total amount
+        in shopping bag
+        """
+        all_product_ids = self.bag.keys()
+        products = Product.objects.filter(id__in=all_product_ids)
+        bag = self.bag.copy()
+
+        for product in products:
+            bag[str(product.id)]['product'] = product
+        for item in bag.values():
+            item['price'] = Decimal(item['price'])
+            item['total'] = item['price'] * item['qty']
+            yield item

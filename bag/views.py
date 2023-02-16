@@ -7,6 +7,7 @@ from django.http import JsonResponse
 
 def bag_summary(request):
     """ A view that renders the bag contents page """
+    bag = Bag(request)
     return render(request, 'bag/bag-summary.html')
 
 
