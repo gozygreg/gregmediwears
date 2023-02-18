@@ -50,7 +50,12 @@ def bag_delete(request):
 
     if request.POST.get('action') == 'post':
         product_id = int(request.POST.get('product_id'))
+        product = Product.objects.get(id=product_id)
         bag.delete(product=product_id)
+
+        messages.success(
+            request, f'You have deleted {product.name} from your bag'
+            )
 
         """
         Gets the latest quantity and total price after
@@ -72,8 +77,13 @@ def bag_update(request):
     if request.POST.get('action') == 'post':
         product_id = int(request.POST.get('product_id'))
         product_quantity = int(request.POST.get('product_quantity'))
+        product = Product.objects.get(id=product_id)
 
         bag.update(product=product_id, qty=product_quantity)
+
+        messages.success(
+            request, f'You have updated the quantity of {product.name}'
+            )
 
         """
         Gets the latest quantity and total price after
