@@ -17,6 +17,7 @@ def bag_add(request):
     View to add product into shopping bag
     """
     bag = Bag(request)
+    redirect_url = request.POST.get('redirect_url')
 
     if request.method == 'POST' and request.POST.get('action') == 'post':
         product_id = int(request.POST.get('product_id'))
@@ -36,7 +37,9 @@ def bag_add(request):
 
         response = JsonResponse({'qty': bag_quantity})
         return response
-    return redirect('bag/bag-summary.html')
+
+    redirect_url = request.POST.get('redirect_url')
+    return redirect(redirect_url)
 
 
 def bag_delete(request):

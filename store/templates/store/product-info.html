@@ -54,6 +54,7 @@
                         </div>
                     </div>
                 </div>
+                <input type="hidden" name="redirect_url" id="redirect-url" value="{{ request.path }}">
             </div>
         </div>
     </main>
@@ -74,7 +75,10 @@
                 action: 'post'
             },
             success: function (json) {
-                document.getElementById("bag-qty").textContent = json.qty
+                document.getElementById("bag-qty").textContent = json.qty;
+                document.getElementById("redirect-url").value = window.location.pathname;
+                window.location.href = '/';
+
             },
             error: function (xhr, errmsg, err) {
 
