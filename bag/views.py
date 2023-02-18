@@ -1,14 +1,15 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .bag import Bag
 from store.models import Product
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
+from django.contrib import messages
 
 
 def bag_summary(request):
-    """ A view that renders the bag contents page """
+    """A view that renders the bag contents page"""
     bag = Bag(request)
-    return render(request, 'bag/bag-summary.html')
+    return render(request, 'bag/bag-summary.html', {'bag': bag})
 
 
 def bag_add(request):
@@ -17,7 +18,7 @@ def bag_add(request):
     """
     bag = Bag(request)
 
-    if request.POST.get('action') == 'post':
+    if request.method == 'POST' and request.POST.get('action') == 'post':
         product_id = int(request.POST.get('product_id'))
         product_quantity = int(request.POST.get('product_quantity'))
 
@@ -26,13 +27,16 @@ def bag_add(request):
         bag.add(product=product, product_qty=product_quantity)
 
         """
-        Gets the total qauntity of products (from session data)
+        Gets the total quantity of products (from session data)
         after adding a product into the shopping bag
         """
         bag_quantity = bag.__len__()
 
+        messages.success(request, f'Added {product.name} to your bag')
+
         response = JsonResponse({'qty': bag_quantity})
         return response
+    return redirect('bag/bag-summary.html')
 
 
 def bag_delete(request):

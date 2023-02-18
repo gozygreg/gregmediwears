@@ -84,7 +84,8 @@ class Bag():
         """
         all_product_ids = self.bag.keys()
         products = Product.objects.filter(id__in=all_product_ids)
-        bag = self.bag.copy()
+        import copy
+        bag = copy.deepcopy(self.bag)
 
         for product in products:
             bag[str(product.id)]['product'] = product
