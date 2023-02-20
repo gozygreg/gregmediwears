@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'store',  # Django app
     'bag',  # Django app
-    'account',  # Django app
+    'profiles',  # Django app
     'mathfilters',
 ]
 
