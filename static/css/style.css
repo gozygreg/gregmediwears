@@ -79,3 +79,8 @@ html {
     overflow-x: hidden;
     overflow-y: auto;
 }
+
+.form-layout {
+    border-radius: 20px;
+    width: 500px;
+}
