@@ -46,7 +46,10 @@ INSTALLED_APPS = [
     'bag',  # Django app
     'profiles',  # Django app
     'mathfilters',
+    'crispy_forms',
 ]
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
