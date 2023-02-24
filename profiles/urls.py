@@ -15,4 +15,6 @@ urlpatterns = [
 
     # Dashbooard / profile urls
     path('dashboard', views.dashboard, name='dashboard'),
+    path('profile-management', views.profile_management, name='profile-management'),
+    path('profile-delete', views.profile_delete, name='profile-delete'),
 ]
