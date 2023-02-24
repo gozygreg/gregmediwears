@@ -20,10 +20,10 @@ def register(request):
     if request.method == 'POST':
         form = CreateUserForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
-            user.is_active = False
-            user.save()
-            messages.success(request, 'Your account has been created and is waiting for approval.')
+            form.save()
+            messages.success(
+                request, "Welcome to gregyjudah store! You are registered"
+            )
             return redirect('dashboard')
 
             # # email verification setup
@@ -89,5 +89,11 @@ def my_login(request):
     return render(request, 'profiles/my-login.html', context=context)
 
 
+def user_logout(request):
+    auth.logout(request)
+    return redirect("store")
+
+
+@login_required(login_url='my-login')
 def dashboard(request):
     return render(request, 'profiles/dashboard.html')
