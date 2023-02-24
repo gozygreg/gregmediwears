@@ -22,7 +22,7 @@ def register(request):
         if form.is_valid():
             form.save()
             messages.success(
-                request, "Welcome to gregyjudah store! You are registered"
+                request, "Welcome to GMW store! You are registered"
             )
             return redirect('dashboard')
 
@@ -101,7 +101,6 @@ def dashboard(request):
 
 @login_required(login_url='my-login')
 def profile_management(request):
-
     # Update username and email
     if request.method == 'POST':
         user_form = UpdateUserForm(request.POST, instance=request.user)
@@ -116,4 +115,8 @@ def profile_management(request):
 
 @login_required(login_url='my-login')
 def profile_delete(request):
+    user = User.objects.get(id=request.user.id)
+    if request.method == 'POST':
+        user.delete()
+        return redirect('store')
     return render(request, 'profiles/profile-delete.html')
