@@ -84,12 +84,27 @@
     </div>
     <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
         <ul class="navbar-nav ml-auto">
+            {% if user.is_authenticated %}
+            <li class="nav-item">
+                <a class="btn btn-alert navbar-btn text-black" type="button" href="{% url 'dashboard' %}"><i
+                        class="fa fa-home" aria-hidden="true"></i> &nbsp; Dashboard
+                </a>
+            </li>
+            {% else %}
             <li class="nav-item">
                 <a class="btn btn-alert navbar-btn text-black" type="button" href="{% url 'register' %}"> Register </a>
             </li>
+            {% endif %}
+
+            {% if user.is_authenticated %}
+            <li class="nav-item">
+                <a class="btn btn-alert navbar-btn text-black" type="button" href="{% url 'user-logout' %}"> Logout </a>
+            </li>
+            {% else %}
             <li class="nav-item">
                 <a class="btn btn-alert navbar-btn text-black" type="button" href="{% url 'my-login' %}"> Login </a>
             </li>
+            {% endif %}
             &nbsp; &nbsp; &nbsp;
             <li class="nav-item">
                 <a type="button" role="button" href="{% url 'bag-summary' %}" class="btn btn-outline-secondary">
