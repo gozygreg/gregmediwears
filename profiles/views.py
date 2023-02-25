@@ -90,8 +90,15 @@ def my_login(request):
 
 
 def user_logout(request):
-    auth.logout(request)
-    return redirect("store")
+    try:
+        for key in list(request.session.keys()):
+            if key == 'session_key':
+                continue
+            else:
+                del request.session[key]
+    except KeyError:
+        pass
+    return redirect('store')
 
 
 @login_required(login_url='my-login')
