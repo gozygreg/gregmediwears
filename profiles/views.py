@@ -98,6 +98,7 @@ def user_logout(request):
                 del request.session[key]
     except KeyError:
         pass
+    messages.success(request, "You have logged out successfully")
     return redirect('store')
 
 
@@ -114,6 +115,7 @@ def profile_management(request):
         user_form = UpdateUserForm(request.POST, instance=request.user)
         if user_form.is_valid():
             user_form.save()
+            messages.success(request, "You account have been updated")
             return redirect('dashboard')
 
     context = {'user_form': user_form}
@@ -125,5 +127,6 @@ def profile_delete(request):
     user = User.objects.get(id=request.user.id)
     if request.method == 'POST':
         user.delete()
+        messages.success(request, "Account deleted successfully")
         return redirect('store')
     return render(request, 'profiles/profile-delete.html')
