@@ -4,9 +4,9 @@ from .models import ShippingAddress, Order
 
 class ShippingForm(forms.ModelForm):
     class Meta:
-        model = Order
+        model = ShippingAddress
         fields = ('full_name', 'email', 'address1', 'address2',
-                  'town_or_city', 'postcode', 'country', 'county',)
+                  'town_or_city', 'county', 'postcode', 'country')
         exclude = ['user',]
 
     def __init__(self, *args, **kwargs):
@@ -18,12 +18,12 @@ class ShippingForm(forms.ModelForm):
         placeholders = {
             'full_name': 'Full Name',
             'email': 'Email Address',
-            'country': 'Country',
-            'postcode': 'Postal Code',
-            'town_or_city': 'Town or City',
             'address1': 'Address 1',
             'address2': 'Address 2',
+            'town_or_city': 'Town or City',
+            'postcode': 'Post code',
             'county': 'County',
+            'country': 'Country'
         }
 
         self.fields['full_name'].widget.attrs['autofocus'] = True
