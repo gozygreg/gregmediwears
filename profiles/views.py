@@ -157,11 +157,3 @@ def manage_shipping(request):
     return render(request, 'profiles/manage-shipping.html', context=context)
 
 
-# def manage_shipping(request):
-#     form = ShippingForm()
-#     template = 'profiles/manage-shipping.html'
-#     context = {
-#         'form': form,
-#     }
-
-#     return render(request, template, context)
