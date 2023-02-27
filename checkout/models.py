@@ -2,6 +2,7 @@ import uuid
 from django.db import models
 from django.contrib.auth.models import User
 from store.models import Product
+from django_countries.fields import CountryField
 
 
 class ShippingAddress(models.Model):
@@ -13,7 +14,7 @@ class ShippingAddress(models.Model):
     town_or_city = models.CharField(max_length=40, null=False, blank=False)
     county = models.CharField(max_length=80, null=True, blank=True)
     postcode = models.CharField(max_length=20, null=True, blank=True)
-    country = models.CharField(max_length=40, null=False, blank=False)
+    country = CountryField(blank_label='Country *', null=False, blank=False)
 
     class Meta:
         verbose_name_plural = 'Shipping Address'

@@ -2,7 +2,7 @@ from django.shortcuts import redirect, render
 from .forms import CreateUserForm, LoginForm, UpdateUserForm
 from django.contrib.auth.models import User
 from checkout.forms import ShippingForm
-from checkout.models import ShippingAddress
+from checkout.models import ShippingAddress, Order, OrderItem
 
 # from django.contrib.sites.shortcuts import get_current_site
 # from . token import user_tokenizer_generate
@@ -155,3 +155,13 @@ def manage_shipping(request):
             return redirect('dashboard')
     context = {'form': form}
     return render(request, 'profiles/manage-shipping.html', context=context)
+
+
+# def manage_shipping(request):
+#     form = ShippingForm()
+#     template = 'profiles/manage-shipping.html'
+#     context = {
+#         'form': form,
+#     }
+
+#     return render(request, template, context)
