@@ -1,7 +1,7 @@
 import uuid
 from django.db import models
+from django.db.models import Sum
 from django.contrib.auth.models import User
-from store.models import Product
 from django_countries.fields import CountryField
 
 
@@ -29,14 +29,23 @@ class Order(models.Model):
     full_name = models.CharField(max_length=50, null=False, blank=False)
     email = models.EmailField(max_length=254, null=False, blank=False)
     shipping_address = models.TextField(max_length=5000)
-    amount_paid = models.DecimalField(max_digits=10, decimal_places=2, null=False, default=0)
     date_ordered = models.DateTimeField(auto_now_add=True)
+    order_total = models.DecimalField(max_digits=10, decimal_places=2, null=False, default=0)
+    grand_total = models.DecimalField(max_digits=10, decimal_places=2, null=False, default=0)
 
     def _generate_order_number(self):
         """
         Generate a random, unique order number using UUID
         """
         return uuid.uuid4().hex.upper()
+
+    def update_total(self):
+        """
+        Update grand total each time a line item is added
+        """
+        self.order_total = self.lineitems.aggregate(Sum('lineitem_total'))['lineitem_total__sum']
+        self.grand_total = self.order_total
+        self.save()
 
     def save(self, *args, **kwargs):
         """
@@ -51,12 +60,20 @@ class Order(models.Model):
         return self.order_number
 
 
-class OrderItem(models.Model):
+class OrderLineItem(models.Model):
     order = models.ForeignKey(Order, null=True, on_delete=models.CASCADE, related_name='lineitems')
-    product = models.ForeignKey(Product, null=True, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    price = models.DecimalField(max_digits=8, decimal_places=2)
-    quantity = models.IntegerField(null=False, blank=False, default=1)
+    quantity = models.IntegerField(null=False, blank=False, default=0)
+    lineitem_total = models.DecimalField(max_digits=6, decimal_places=2, null=False, blank=False, editable=False)
+    product = models.ForeignKey('store.Product', null=True, on_delete=models.CASCADE)
+
+    def save(self, *args, **kwargs):
+        """
+        Override the original save method to set the lineitem total
+        and update the order total.
+        """
+        self.lineitem_total = self.product.price * self.quantity
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f'Product id {self.product.id} on order {self.order.order_number}'

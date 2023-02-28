@@ -2,7 +2,7 @@ from django.shortcuts import redirect, render
 from .forms import CreateUserForm, LoginForm, UpdateUserForm
 from django.contrib.auth.models import User
 from checkout.forms import ShippingForm
-from checkout.models import ShippingAddress, Order, OrderItem
+from checkout.models import ShippingAddress, Order, OrderLineItem
 
 # from django.contrib.sites.shortcuts import get_current_site
 # from . token import user_tokenizer_generate
