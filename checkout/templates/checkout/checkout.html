@@ -13,9 +13,11 @@
 <body>
     <br>
     <div class="container bg-white shadow-md p-5" style="width:500px; border-radius:20px;">
-        <form id="form" onsubmit="event.preventDefault();">
+        <form id="payment-form" action="{% url 'checkout' %}" method="POST">
+            {% csrf_token %}
             <div>
-                <h3> <i class="fa fa-chevron-circle-right" aria-hidden="true"></i> &nbsp; Complete your order </h3>
+                <h3> <i class="fa fa-chevron-circle-right" aria-hidden="true"></i> &nbsp; Complete your
+                    order </h3>
                 <p> Please enter in the relevant information below. </p>
                 <hr>
                 <br>
@@ -57,17 +59,46 @@
             <br>
             <button id="complete-order" type="submit" class="btn btn-primary navbar-btn text-white"> &nbsp; Complete
                 order </button>
-            <br>
+            <br><br>
+            <fieldset class="px-3">
+                <legend class="fieldset-label small text-black px-2 w-auto">Payment</legend>
+                <!-- A Stripe card element will go here -->
+                <div class="mb-3" id="card-element"></div>
+
+                <!-- Used to display form errors -->
+                <div class="mb-3 text-danger" id="card-errors" role="alert"></div>
+            </fieldset>
+
+            <div class="submit-button text-right mt-5 mb-2">
+                <a href="{% url 'bag-summary' %}" class="btn btn-outline-black rounded-0">
+                    <span class="icon">
+                        <i class="fas fa-chevron-left"></i>
+                    </span>
+                    <span class="font-weight-bold">Adjust Bag</span>
+                </a>
+                <button id="submit-button" class="btn btn-black rounded-0">
+                    <span class="font-weight-bold">Complete Order</span>
+                    <span class="icon">
+                        <i class="fas fa-lock"></i>
+                    </span>
+                </button>
+                <p class="small text-danger my-0">
+                    <span class="icon">
+                        <i class="fas fa-exclamation-circle"></i>
+                    </span>
+                    <span>Your card will be charged <strong>${{ bag.get_total|floatformat:2 }}</strong></span>
+                </p>
+            </div>
+
 
         </form>
     </div>
     <br>
 </body>
 
-
-
-
-
-
-
+{% endblock %}
+{% block corejs %}
+{{ stripe_public_key|json_script:"id_stripe_public_key" }}
+{{ client_secret|json_script:"id_client_secret" }}
+<script src="{% static 'checkout/js/stripe_elements.js' %}"></script>
 {% endblock %}

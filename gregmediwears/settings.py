@@ -78,6 +78,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',  # required by allauth
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.media',
 
                 # allows our data to be available in every templates or page
                 'store.views.categories',
