@@ -1,66 +1,48 @@
+from decimal import Decimal
 from django.shortcuts import render, redirect, reverse
-from .models import ShippingAddress
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.conf import settings
+from .models import ShippingAddress, Order, OrderLineItem
 from .forms import ShippingForm
 from bag.bag import Bag
-
-
-# def checkout(request):
-#     bag = Bag(request)
-#     # users with accounts -- pre-fill the form
-#     if request.user.is_authenticated:
-#         try:
-#             # Authenticated users with shipping information
-#             shipping_address = ShippingAddress.objects.get(user=request.user.id)
-#             context = {'shipping': shipping_address}
-#             return render(request, 'checkout/checkout.html', context=context)
-#         except:
-#             # Authenticated users without shipping information
-#             return render(request, 'checkout/checkout.html')
-#     else:
-#         # Guest user
-#         return render(request, 'checkout/checkout.html')
-
-
-
-#     return render(request, 'checkout/checkout.html')
+import stripe
+import json
 
 
 def checkout(request):
-    bag = Bag(request) 
-    # If user is authenticated
-    if request.user.is_authenticated:
-        try:
-            # Get the user's shipping address if it exists
-            shipping_address = ShippingAddress.objects.get(user=request.user)
-        except ShippingAddress.DoesNotExist:
-            shipping_address = None
-    else:
-        shipping_address = None    
+    bag = Bag(request)
     if request.method == 'POST':
-        # Process the form submission
-        form = ShippingForm(request.POST, instance=shipping_address)
+        form = ShippingForm(request.POST)
         if form.is_valid():
             shipping_address = form.save(commit=False)
             shipping_address.user = request.user
             shipping_address.save()
             request.session['shipping_address'] = shipping_address.id
-            return redirect(reverse('dashboard'))
+            return redirect(reverse('checkout_success'))
     else:
-        # Render the form
-        form = ShippingForm(instance=shipping_address)
+        form = ShippingForm()
 
+    stripe_public_key = settings.STRIPE_PUBLIC_KEY
+    stripe_secret_key = settings.STRIPE_SECRET_KEY
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+
+    order_total = bag.get_total()
+    intent = stripe.PaymentIntent.create(
+        amount=int(order_total * 100),
+        currency='usd'
+    )
+
+    if not stripe_public_key:
+        messages.warning(request, 'Your stripe public key is missing!')
     context = {
         'form': form,
-        'shipping_address': shipping_address,
         'bag': bag,
-        'stripe_public_key': 'pk_test_51MX7x2AGFYQzGfhGw5CWd6b1MlJ3C11whROQsiK8AcK31fXPYq35F7kgNlZBwE8wRpjIAyrYjeLwOgYqY6YnRsEK00JcAoHlHd',
-        'client_secret': 'test client secret',
+        'stripe_public_key': stripe_public_key,
+        'client_secret': intent.client_secret,
     }
 
     return render(request, 'checkout/checkout.html', context=context)
-
-
-
 
 
 
