@@ -30,17 +30,6 @@ def checkout(request):
         county = request.POST.get('county')
         postcode = request.POST.get('postcode')
 
-        # Create a ShippingAddress instance
-        shipping_address_obj = ShippingAddress.objects.create(
-            full_name=full_name,
-            email=email,
-            address1=address1,
-            address2=address2,
-            town_or_city=town_or_city,
-            county=county,
-            postcode=postcode,
-        )
-
         # All-in-one shipping address
         shipping_address = (
             f'{address1}\n{address2}\n{town_or_city}\n{county}\n{postcode}'
@@ -49,7 +38,6 @@ def checkout(request):
         # Shipping cart information
         total_cost = bag.get_total()
         stripe_total = round(total_cost * 100)
-        stripe.api_key = stripe_secret_key
 
         try:
             intent = stripe.PaymentIntent.create(
@@ -57,34 +45,24 @@ def checkout(request):
                 currency=settings.STRIPE_CURRENCY,
             )
 
-            # bag.clear_bag()
-            order = Order.objects.create(
+            order, created = Order.objects.get_or_create(
                 full_name=full_name,
                 email=email,
                 shipping_address=shipping_address,
-                total_paid=total_cost,
-                stripe_pid=intent.id,
+                order_total=total_cost,
+                user=request.user if request.user.is_authenticated else None
             )
 
-            for item_id, quantity in bag.items.items():
-                product = get_object_or_404(Product, pk=item_id)
-                order_line_item = OrderLineItem(
+            for item in bag:
+                OrderLineItem.objects.create(
                     order=order,
-                    product=product,
-                    quantity=quantity,
+                    product=item['product'],
+                    quantity=item['qty'],
+                    price=item['price'],
+                    user=request.user if request.user.is_authenticated else None
                 )
-                order_line_item.save()
 
-            shipping_address_obj = ShippingAddress.objects.create(
-                full_name=full_name,
-                email=email,
-                address1=address1,
-                address2=address2,
-                town_or_city=town_or_city,
-                county=county,
-                postcode=postcode,
-            )
-            shipping_address_obj.save()
+            bag.clear_bag()
             messages.success(request, f'Your order has been processed! \
                 Your order number is {order.order_number}. You will receive a confirmation email shortly.')
             return redirect(reverse('store'))
@@ -92,19 +70,16 @@ def checkout(request):
         except stripe.error.CardError as e:
             intent = None
             messages.error(request, f'Your card was declined: {e.error.message}')
-    else:
-        bag = Bag(request)
 
-    current_bag = bag
-    total = current_bag.get_total()
+    if intent is None:
+        current_bag = bag
+        total = current_bag.get_total()
 
-    stripe_total = round(total * 100)
-    stripe.api_key = stripe_secret_key
-
-    intent = stripe.PaymentIntent.create(
-        amount=stripe_total,
-        currency=settings.STRIPE_CURRENCY,
-    )
+        stripe_total = round(total * 100)
+        intent = stripe.PaymentIntent.create(
+            amount=stripe_total,
+            currency=settings.STRIPE_CURRENCY,
+        )
 
     context = {
         'shipping_form': shipping_form,
@@ -115,6 +90,7 @@ def checkout(request):
     }
 
     return render(request, 'checkout/checkout.html', context)
+
 
 
 def checkout_success(request, order_number):

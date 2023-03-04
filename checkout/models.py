@@ -27,7 +27,7 @@ class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     order_number = models.CharField(max_length=32, null=False, editable=False)
     full_name = models.CharField(max_length=100, null=False, blank=False)
-    email = models.EmailField(max_length=254, null=False, blank=False)
+    email = models.EmailField(max_length=255)
     shipping_address = models.ForeignKey(ShippingAddress, on_delete=models.CASCADE)
     date_ordered = models.DateTimeField(auto_now_add=True)
     order_total = models.DecimalField(max_digits=10, decimal_places=2, null=False, default=0)

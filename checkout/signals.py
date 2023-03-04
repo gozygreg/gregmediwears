@@ -1,6 +1,6 @@
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-from .models import OrderLineItem
+from .models import OrderLineItem, Order
 
 
 @receiver(post_save, sender=OrderLineItem)
@@ -16,4 +16,8 @@ def update_on_delete(sender, instance, **kwargs):
     """
     Update order total on lineitem delete
     """
-    instance.order.update_total()
+    try:
+        order = instance.order
+        order.update_total()
+    except Order.DoesNotExist:
+        pass
