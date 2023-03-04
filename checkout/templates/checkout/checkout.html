@@ -2,6 +2,8 @@
 
 {% load static %}
 
+{% load crispy_forms_tags %}
+
 {% block content %}
 
 <style>
@@ -21,7 +23,30 @@
                 <p> Please enter in the relevant information below. </p>
                 <hr>
                 <br>
-                <div class="form-field">
+                <fieldset class="rounded px-3 mb-5">
+                    <legend class="fieldset-label small text-black px-2 w-auto">Details</legend>
+                    {{ shipping_form.full_name | as_crispy_field}}
+
+                    {{ shipping_form.email | as_crispy_field }}
+
+                </fieldset>
+                <fieldset class="rounded px-3 mb-5">
+                    <legend class="fieldset-label small text-black px-2 w-auto">Delivery</legend>
+                    {{ shipping_form.country | as_crispy_field }}
+
+                    {{ shipping_form.postcode | as_crispy_field }}
+
+                    {{ shipping_form.town_or_city | as_crispy_field }}
+
+                    {{ shipping_form.address1 | as_crispy_field }}
+
+                    {{ shipping_form.address2 | as_crispy_field }}
+
+                    {{ shipping_form.county | as_crispy_field }}
+
+                </fieldset>
+                <div>
+                    <!-- <div class="form-field">
                     <input class="form-control validate" id="name" type="text" placeholder="Full name*"
                         autocomplete="off" value="{{ shipping.full_name }}" required>
                 </div>
@@ -54,41 +79,41 @@
                 <div class="form-field">
                     <input class="form-control" id="postcode" type="text" placeholder="postcode (Optional)"
                         autocomplete="off" value="{{ shipping.postcode }}">
+                </div> -->
                 </div>
-            </div>
-            <br>
-            <button id="complete-order" type="submit" class="btn btn-primary navbar-btn text-white"> &nbsp; Complete
-                order </button>
-            <br><br>
-            <fieldset class="px-3">
-                <legend class="fieldset-label small text-black px-2 w-auto">Payment</legend>
-                <!-- A Stripe card element will go here -->
-                <div class="mb-3" id="card-element"></div>
+                <!-- <br>
+                <button id="complete-order" type="submit" class="btn btn-primary navbar-btn text-white"> &nbsp; Complete
+                    order </button>
+                <br><br> -->
+                <fieldset class="px-3">
+                    <legend class="fieldset-label small text-black px-2 w-auto">Payment</legend>
+                    <!-- A Stripe card element will go here -->
+                    <div class="mb-3" id="card-element"></div>
 
-                <!-- Used to display form errors -->
-                <div class="mb-3 text-danger" id="card-errors" role="alert"></div>
-            </fieldset>
+                    <!-- Used to display form errors -->
+                    <div class="mb-3 text-danger" id="card-errors" role="alert"></div>
+                </fieldset>
 
-            <div class="submit-button text-right mt-5 mb-2">
-                <a href="{% url 'bag-summary' %}" class="btn btn-outline-black rounded-0">
-                    <span class="icon">
-                        <i class="fas fa-chevron-left"></i>
-                    </span>
-                    <span class="font-weight-bold">Adjust Bag</span>
-                </a>
-                <button id="submit-button" class="btn btn-black rounded-0">
-                    <span class="font-weight-bold">Complete Order</span>
-                    <span class="icon">
-                        <i class="fas fa-lock"></i>
-                    </span>
-                </button>
-                <p class="small text-danger my-0">
-                    <span class="icon">
-                        <i class="fas fa-exclamation-circle"></i>
-                    </span>
-                    <span>Your card will be charged <strong>${{ bag.get_total|floatformat:2 }}</strong></span>
-                </p>
-            </div>
+                <div class="submit-button text-right mt-5 mb-2">
+                    <a href="{% url 'bag-summary' %}" class="btn btn-outline-black rounded-0">
+                        <span class="icon">
+                            <i class="fas fa-chevron-left"></i>
+                        </span>
+                        <span class="font-weight-bold">Adjust Bag</span>
+                    </a>
+                    <button id="submit-button" class="btn btn-black rounded-0">
+                        <span class="font-weight-bold">Complete Order</span>
+                        <span class="icon">
+                            <i class="fas fa-lock"></i>
+                        </span>
+                    </button>
+                    <p class="small text-danger my-0">
+                        <span class="icon">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </span>
+                        <span>Your card will be charged <strong>${{ bag.get_total|floatformat:2 }}</strong></span>
+                    </p>
+                </div>
 
 
         </form>

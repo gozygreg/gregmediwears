@@ -3,6 +3,7 @@ from .models import ShippingAddress, Order
 
 
 class ShippingForm(forms.ModelForm):
+    email = forms.EmailField()
     class Meta:
         model = ShippingAddress
         fields = ('full_name', 'email', 'address1', 'address2',
