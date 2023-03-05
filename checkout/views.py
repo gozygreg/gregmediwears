@@ -36,7 +36,13 @@ def checkout(request):
         )
 
         # Shipping cart information
+        bag = Bag(request)
         total_cost = bag.get_total()
+
+        if total_cost < 1:
+            messages.error(request, 'The total cost of your order must be at least 1 unit of currency.')
+            return redirect(reverse('store'))
+
         stripe_total = round(total_cost * 100)
 
         try:
@@ -44,29 +50,44 @@ def checkout(request):
                 amount=stripe_total,
                 currency=settings.STRIPE_CURRENCY,
             )
-
-            order, created = Order.objects.get_or_create(
-                full_name=full_name,
-                email=email,
-                shipping_address=shipping_address,
-                order_total=total_cost,
-                user=request.user if request.user.is_authenticated else None
-            )
-
-            for item in bag:
-                OrderLineItem.objects.create(
-                    order=order,
-                    product=item['product'],
-                    quantity=item['qty'],
-                    price=item['price'],
-                    user=request.user if request.user.is_authenticated else None
-                )
-
-            bag.clear_bag()
+            # 1) Create order - Account users with + without shipping information
+            if request.user.is_authenticated:
+                order = Order.objects.create(
+                    full_name=full_name,
+                    email=email,
+                    shipping_address=shipping_address,
+                    order_total=total_cost,
+                    user=request.user
+                    )
+                order_id = order.pk
+                for item in bag:
+                    if item['qty'] >= 1:
+                        OrderLineItem.objects.create(
+                            order=order,
+                            product=item['product'],
+                            quantity=item['qty'],
+                            lineitem_total=item['price'],
+                            user=request.user 
+                        )
+            # 2) Create order - Guest users  without an account
+            else:
+                order = Order.objects.create(
+                    full_name=full_name,
+                    email=email,
+                    shipping_address=shipping_address,
+                    order_total=total_cost,
+                    )
+                order_id = order.pk
+                for item in bag:
+                    if item['qty'] >= 1:
+                        OrderLineItem.objects.create(
+                            order=order,
+                            product=item['product'],
+                            quantity=item['qty'],
+                            price=item['price'],
+                        )
             messages.success(request, f'Your order has been processed! \
                 Your order number is {order.order_number}. You will receive a confirmation email shortly.')
-            return redirect(reverse('store'))
-
         except stripe.error.CardError as e:
             intent = None
             messages.error(request, f'Your card was declined: {e.error.message}')
@@ -86,20 +107,26 @@ def checkout(request):
         'stripe_public_key': stripe_public_key,
         'client_secret': intent.client_secret,
         'bag': bag,
-        'total': total,
     }
 
     return render(request, 'checkout/checkout.html', context)
 
 
-
-def checkout_success(request, order_number):
+def checkout_success(request):
+    # Handle successful checkouts and clear shopping bag 
     order = get_object_or_404(Order, order_number=order_number)
     messages.success(request, f'Order successfully processed! \
         Your order number is {order_number}. A confirmation \
-            email will be sent to {order.email}.')
+        email will be sent to {order.email}.')
 
-    context = {'order': order}
+    for key in list(request.session.keys()):
+        if key == 'session_key':
+            del request.session[key]
+
+    context = {
+        'order': order,
+    }
+
     return render(request, 'checkout/checkout-success.html', context=context)
 
 
