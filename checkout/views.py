@@ -84,10 +84,11 @@ def checkout(request):
                             order=order,
                             product=item['product'],
                             quantity=item['qty'],
-                            price=item['price'],
+                            lineitem_total=item['price'],
                         )
             messages.success(request, f'Your order has been processed! \
                 Your order number is {order.order_number}. You will receive a confirmation email shortly.')
+            return redirect(reverse('checkout-success', args=[order.order_number]))
         except stripe.error.CardError as e:
             intent = None
             messages.error(request, f'Your card was declined: {e.error.message}')
@@ -112,16 +113,15 @@ def checkout(request):
     return render(request, 'checkout/checkout.html', context)
 
 
-def checkout_success(request):
+def checkout_success(request, order_number):
     # Handle successful checkouts and clear shopping bag 
     order = get_object_or_404(Order, order_number=order_number)
     messages.success(request, f'Order successfully processed! \
         Your order number is {order_number}. A confirmation \
         email will be sent to {order.email}.')
 
-    for key in list(request.session.keys()):
-        if key == 'session_key':
-            del request.session[key]
+    if 'bag' in request.session:
+        del request.session['bag']
 
     context = {
         'order': order,
