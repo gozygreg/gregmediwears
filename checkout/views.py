@@ -86,8 +86,12 @@ def checkout(request):
                             quantity=item['qty'],
                             lineitem_total=item['price'],
                         )
-            messages.success(request, f'Your order has been processed! \
+            messages.info(request, f'Your order has been processed! \
                 Your order number is {order.order_number}. You will receive a confirmation email shortly.')
+
+            # clear the bag after a successful checkout
+            bag.clear()
+
             return redirect(reverse('checkout-success', args=[order.order_number]))
         except stripe.error.CardError as e:
             intent = None
@@ -116,9 +120,6 @@ def checkout(request):
 def checkout_success(request, order_number):
     # Handle successful checkouts and clear shopping bag 
     order = get_object_or_404(Order, order_number=order_number)
-    messages.success(request, f'Order successfully processed! \
-        Your order number is {order_number}. A confirmation \
-        email will be sent to {order.email}.')
 
     if 'bag' in request.session:
         del request.session['bag']

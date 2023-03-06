@@ -62,6 +62,13 @@ class Bag():
 
         self.session.modified = True
 
+    def clear(self):
+        """
+        Function to clear the shopping bag by deleting the session key
+        """
+        del self.session['session_key']
+        self.session.modified = True
+
     def __len__(self):
         """
         Gets the length and sum of the total products in our session
