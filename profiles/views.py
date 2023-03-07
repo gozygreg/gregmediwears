@@ -157,3 +157,11 @@ def manage_shipping(request):
     return render(request, 'profiles/manage-shipping.html', context=context)
 
 
+@login_required(login_url='my-login')
+def track_orders(request):
+    try:
+        orders = OrderLineItem.objects.filter(user=request.user)
+        context = {'orders': orders}
+        return render(request, 'profiles/track-orders.html', context=context)
+    except:
+        return render(request, 'profiles/track-orders.html')
