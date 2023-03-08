@@ -35,25 +35,28 @@
 
     {% for order in orders %}
 
-    <strong> <i class="fa fa-list-alt" aria-hidden="true"></i> &nbsp; Order ID # {{order.id}} </strong>
+    <strong> <i class="fa fa-list-alt" aria-hidden="true"></i> &nbsp; Order ID # {{order.id}}
+
+    </strong>
 
     <br> <br>
 
-    {{order.product}}
+    Product Name: {{order.product|capfirst}}
+
 
     <br> <br>
 
-    Quantity x {{order.quantity}}
+    Quantity Ordered: {{order.quantity}}
 
     <br> <br>
 
-    $ {{order.lineitem_total}}
+    Price: $ {{order.lineitem_total}}
 
     <br> <br>
 
     <hr>
-
-
+    {% empty %}
+    <p>You have no orders yet.</p>
     {% endfor %}
 
 </div>

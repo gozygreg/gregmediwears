@@ -44,47 +44,22 @@
 
                     {{ shipping_form.county | as_crispy_field }}
 
+                    <div class="form-check form-check-inline float-right mr-0">
+                        {% if user.is_authenticated %}
+                        <label class="form-check-label" for="id-save-info">Save this delivery information to my
+                            profile</label>
+                        <input class="form-check-input ml-2 mr-0" type="checkbox" id="id-save-info" name="save-info"
+                            checked>
+                        {% else %}
+                        <label class="form-check-label" for="id-save-info">
+                            <a class="text-info" href="{% url 'register' %}">Create an account</a> or
+                            <a class="text-info" href="{% url 'my-login' %}">login</a> to save this information
+                        </label>
+                        {% endif %}
+                    </div>
+
                 </fieldset>
-                <div>
-                    <!-- <div class="form-field">
-                    <input class="form-control validate" id="name" type="text" placeholder="Full name*"
-                        autocomplete="off" value="{{ shipping.full_name }}" required>
-                </div>
-                <br>
-                <div class="form-field">
-                    <input class="form-control validate" id="email" type="email" placeholder="Email address*"
-                        autocomplete="off" value="{{ shipping.email}}" required>
-                </div>
-                <br>
-                <div class="form-field">
-                    <input class="form-control validate" id="address1" type="text" placeholder="Address 1*"
-                        autocomplete="off" value="{{ shipping.address1 }}" required>
-                </div>
-                <br>
-                <div class="form-field">
-                    <input class="form-control validate" id="address2" type="text" placeholder="Address 2*"
-                        autocomplete="off" value="{{ shipping.address2 }}" required>
-                </div>
-                <br>
-                <div class="form-field">
-                    <input class="form-control validate" id="city" type="text" placeholder="Town/City*"
-                        autocomplete="off" value="{{ shipping.town_or_city }}" required>
-                </div>
-                <br>
-                <div class="form-field">
-                    <input class="form-control" id="county" type="text" placeholder="County (Optional)"
-                        autocomplete="off" value="{{ shipping.county }}">
-                </div>
-                <br>
-                <div class="form-field">
-                    <input class="form-control" id="postcode" type="text" placeholder="postcode (Optional)"
-                        autocomplete="off" value="{{ shipping.postcode }}">
-                </div> -->
-                </div>
-                <!-- <br>
-                <button id="complete-order" type="submit" class="btn btn-primary navbar-btn text-white"> &nbsp; Complete
-                    order </button>
-                <br><br> -->
+
                 <fieldset class="px-3">
                     <legend class="fieldset-label small text-black px-2 w-auto">Payment</legend>
                     <!-- A Stripe card element will go here -->
@@ -117,6 +92,13 @@
 
 
         </form>
+    </div>
+    <div id="loading-overlay">
+        <h1 class="text-light logo-font loading-spinner">
+            <span class="icon">
+                <i class="fas fa-3x fa-sync-alt fa-spin"></i>
+            </span>
+        </h1>
     </div>
     <br>
 </body>

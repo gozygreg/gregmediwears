@@ -1,4 +1,4 @@
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, reverse, get_object_or_404
 from .forms import CreateUserForm, LoginForm, UpdateUserForm
 from django.contrib.auth.models import User
 from checkout.forms import ShippingForm
@@ -157,7 +157,6 @@ def manage_shipping(request):
     return render(request, 'profiles/manage-shipping.html', context=context)
 
 
-@login_required(login_url='my-login')
 def track_orders(request):
     try:
         orders = OrderLineItem.objects.filter(user=request.user)
@@ -165,3 +164,5 @@ def track_orders(request):
         return render(request, 'profiles/track-orders.html', context=context)
     except:
         return render(request, 'profiles/track-orders.html')
+
+
