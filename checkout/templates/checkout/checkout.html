@@ -15,7 +15,7 @@
 <body>
     <br>
     <div class="container bg-white shadow-md p-5" style="width:500px; border-radius:20px;">
-        <form id="payment-form" action="{% url 'checkout' %}" method="POST">
+        <form action="{% url 'checkout' %}" method="POST" id="payment-form">
             {% csrf_token %}
             <div>
                 <h3> <i class="fa fa-chevron-circle-right" aria-hidden="true"></i> &nbsp; Complete your
@@ -107,5 +107,5 @@
 {% block corejs %}
 {{ stripe_public_key|json_script:"id_stripe_public_key" }}
 {{ client_secret|json_script:"id_client_secret" }}
-<script src="{% static 'checkout/js/stripe_elements.js' %}"></script>
+<script src="{% static 'checkout/js/stripe_elements.js' %}" defer></script>
 {% endblock %}

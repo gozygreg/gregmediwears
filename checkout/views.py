@@ -20,11 +20,12 @@ stripe.api_key = stripe_secret_key
 
 @require_POST
 def cache_checkout_data(request):
+    bag = Bag(request)
     try:
         pid = request.POST.get('client_secret').split('_secret')[0]
         stripe.api_key = settings.STRIPE_SECRET_KEY
         stripe.PaymentIntent.modify(pid, metadata={
-            'bag': json.dumps(request.session.get('bag', {})),
+            'bag': bag,
             'save_info': request.POST.get('save_info'),
             'username': request.user,
         })
@@ -55,7 +56,6 @@ def checkout(request):
         )
 
         # Shipping cart information
-        bag = Bag(request)
         total_cost = bag.get_total()
 
         if total_cost < 1:
