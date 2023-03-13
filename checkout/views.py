@@ -79,6 +79,10 @@ def checkout(request):
                     user=request.user
                     )
                 order_id = order.pk
+                pid = request.POST.get('client_secret').split('_secret')[0]
+                order.stripe_pid = pid
+                order.original_bag = bag
+                order.save()
                 for item in bag:
                     if item['qty'] >= 1:
                         OrderLineItem.objects.create(
