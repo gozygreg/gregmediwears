@@ -41,6 +41,8 @@ def checkout(request):
     shipping_form = ShippingForm()
     intent = None
 
+    print('VIEW BAG: ', bag)
+
     if request.method == 'POST':
         full_name = request.POST.get('full_name')
         email = request.POST.get('email')
@@ -83,6 +85,7 @@ def checkout(request):
                 order.stripe_pid = pid
                 order.original_bag = bag
                 order.save()
+                print('VIEW ORDER:', order)
                 for item in bag:
                     if item['qty'] >= 1:
                         OrderLineItem.objects.create(
@@ -92,6 +95,7 @@ def checkout(request):
                             lineitem_total=item['price'],
                             user=request.user 
                         )
+                    print('ITEM: ', item)
             # 2) Create order - Guest users  without an account
             else:
                 order = Order.objects.create(

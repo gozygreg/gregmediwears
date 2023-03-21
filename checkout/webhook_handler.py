@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from .models import Order, OrderLineItem
 from store.models import Product
+import stripe
 import json
 import time
 
@@ -37,6 +38,8 @@ class StripeWH_Handler:
         shipping_details = intent.shipping
         grand_total = round(stripe_charge.amount / 100, 2)
 
+        print('INTENT: ', intent)
+
         for field, value in shipping_details.address.items():
             if value == "":
                 shipping_details.address[field] = None
@@ -45,14 +48,9 @@ class StripeWH_Handler:
         while attempt <= 5:
             try:
                 order = Order.objects.get(
-                    full_name_iexact=shipping_details.name,
-                    email_iexact=billing_details.email,
-                    country_iexact=shipping_details.address.country,
-                    postcode_iexact=shipping_details.address.postal_code,
-                    town_or_city_iexact=shipping_details.address.city,
-                    address1_iexact=shipping_details.address.line1,
-                    address2_iexact=shipping_details.address.line2,
-                    county_iexact=shipping_details.address.state,
+                    full_name=shipping_details.name,
+                    email=billing_details.email,
+                    shipping_address=shipping_details.address,
                     grand_total=grand_total,
                     original_bag=bag,
                     stripe_pid=pid,
@@ -69,57 +67,32 @@ class StripeWH_Handler:
         else:
             order = None
             try:
-                if request.user.is_authenticated:
-                    order = Order.objects.create(
-                        full_name=shipping_details.name,
-                        email=billing_details.email,
-                        country_=shipping_details.address.country,
-                        postcode=shipping_details.address.postal_code,
-                        town_or_city=shipping_details.address.city,
-                        address1=shipping_details.address.line1,
-                        address2=shipping_details.address.line2,
-                        county=shipping_details.address.state,
-                        user=request.user,
-                        original_bag=bag,
-                        stripe_pid=pid,
-                    )
-                    order_id = order.pk
-                    for item in json.loads(bag):
-                        if item['qty'] >= 1:
-                            OrderLineItem.objects.create(
-                                order=order,
-                                product=item['product'],
-                                quantity=item['qty'],
-                                lineitem_total=item['price'],
-                                user=request.user
-                            )
-                # 2) Create order - Guest users  without an account
-                else:
-                    order = Order.objects.create(
-                        full_name=shipping_details.name,
-                        email=billing_details.email,
-                        country_=shipping_details.address.country,
-                        postcode=shipping_details.address.postal_code,
-                        town_or_city=shipping_details.address.city,
-                        address1=shipping_details.address.line1,
-                        address2=shipping_details.address.line2,
-                        county=shipping_details.address.state,
-                        user=request.user,
-                        original_bag=bag,
-                        stripe_pid=pid,
+                print('IN TRY BLOCK')
+                order = Order.objects.create(
+                    full_name=shipping_details.name,
+                    email=billing_details.email,
+                    shipping_address=shipping_details.address,
+                    original_bag=bag,
+                    stripe_pid=pid,
+                )
+                print('ORDER: ', order)
+                order_id = order.pk
+                print('ORDER ID: ', order_id)
+                print('BAG: ', bag)
+                for item in bag:
+                    print('IN FOR LOOP')
+                    print('WH ITEM: ', item)
+                    if item['qty'] >= 1:
+                        OrderLineItem.objects.create(
+                            order=order,
+                            product=item['product'],
+                            quantity=item['qty'],
+                            lineitem_total=item['price'],
                         )
-                    order_id = order.pk
-                    for item in bag:
-                        if item['qty'] >= 1:
-                            OrderLineItem.objects.create(
-                                order=order,
-                                product=item['product'],
-                                quantity=item['qty'],
-                                lineitem_total=item['price'],
-                            )
             except Exception as e:
                 if order:
                     order.delete()
+                print(e)
                 return HttpResponse(
                     content=f'Webhook received: {event["type"]} | ERROR: {e}',
                     status=500)

@@ -166,3 +166,93 @@ def track_orders(request):
         return render(request, 'profiles/track-orders.html')
 
 
+# from django.shortcuts import redirect, render, reverse, get_object_or_404
+# from django.contrib.auth.decorators import login_required
+# from django.contrib import messages
+# from django.contrib.auth.models import User
+# from checkout.forms import ShippingForm
+# from checkout.models import ShippingAddress, Order, OrderLineItem
+# from allauth.account.forms import LoginForm, SignupForm, ChangePasswordForm
+# from allauth.account.views import PasswordChangeView
+# from django.utils.translation import gettext_lazy as _
+
+# @login_required(login_url='account_login')
+# def dashboard(request):
+#     return render(request, 'profiles/dashboard.html')
+
+
+# @login_required(login_url='account_login')
+# def profile_management(request):
+#     return render(request, 'profiles/profile-management.html')
+
+
+# @login_required(login_url='account_login')
+# def profile_delete(request):
+#     return render(request, 'profiles/profile-delete.html')
+
+
+# @login_required(login_url='account_login')
+# def manage_shipping(request):
+#     try:
+#         shipping = ShippingAddress.objects.get(user=request.user.id)
+#     except ShippingAddress.DoesNotExist:
+#         shipping = None
+#     form = ShippingForm(instance=shipping)
+#     if request.method == 'POST':
+#         form = ShippingForm(request.POST, instance=shipping)
+#         if form.is_valid():
+#             shipping_user = form.save(commit=False)
+#             shipping_user.user = request.user
+#             shipping_user.save()
+#             return redirect('dashboard')
+#     context = {'form': form}
+#     return render(request, 'profiles/manage-shipping.html', context=context)
+
+
+# @login_required(login_url='account_login')
+# def track_orders(request):
+#     orders = OrderLineItem.objects.filter(user=request.user)
+#     context = {'orders': orders}
+#     return render(request, 'profiles/track-orders.html', context=context)
+
+
+# def register(request):
+#     form = SignupForm()
+
+#     if request.method == 'POST':
+#         form = SignupForm(request.POST)
+#         if form.is_valid():
+#             user = form.save(request)
+#             messages.success(
+#                 request, _("Welcome to GMW store! You are registered")
+#             )
+#             return redirect('account_email_verification_sent')
+
+#     context = {'form': form}
+#     return render(request, 'profiles/registration/register.html', context=context)
+
+
+# def email_verification_sent(request):
+#     return render(request, 'profiles/registration/email_verification_sent.html')
+
+
+# def email_verification(request, key):
+#     from allauth.account.models import EmailConfirmation, EmailConfirmationHMAC
+#     from django.utils.http import urlsafe_base64_decode
+#     from django.core.exceptions import ObjectDoesNotExist
+
+#     try:
+#         email_confirmation = EmailConfirmationHMAC.from_key(key)
+#     except (TypeError, ValueError, ObjectDoesNotExist):
+#         email_confirmation = None
+
+#     if email_confirmation:
+#         email_address = email_confirmation.email_address
+#         user = email_address.user
+#         email_address.verified = True
+#         email_address.save()
+#         if user.is_active is False:
+#             user.is_active
+#             user.save()
+
+#     return HttpResponseRedirect(reverse('home'))
